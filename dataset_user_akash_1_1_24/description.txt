@@ -1,0 +1,8 @@
+eyes_blink : countinuously blink both the eyes, used to calculate the error with respect to blinks.
+eyes_closed : with the eyes closed do nothing, dont moves the eyes , focus on a single spot.
+eyes_opened : with the eyes opened do nothing, dont moves the eyes , focus on a single spot.
+eyes_opened_movement : with the eyes opened move both the eye balls rapidly, used to calculate the error.
+eyes_closed_movement : with the eyes closed move both the eye balls rapidly, used to calculate the error.
+physical_motor_activation : record a physical gesture with the eyes opened.
+eyes_opened_motor_imagery : record the imagery of the physical movement with the eyes opened.
+eyes_closed_motor_imagery : record the imagery of the physical movement with the eyes closed.
