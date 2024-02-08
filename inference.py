@@ -36,6 +36,7 @@ model = keras.models.load_model("my_model.h5")
 # connecting the board
 BoardShim.enable_dev_board_logger()
 params = BrainFlowInputParams()
+# board = BoardShim(BoardIds.GANGLION_NATIVE_BOARD.value, params)
 board = BoardShim(BoardIds.GANGLION_NATIVE_BOARD.value, params)
 board.prepare_session()
 board.start_stream()
@@ -74,21 +75,10 @@ if apply_denoising:
                                                     WaveletExtensionTypes.SYMMETRIC, NoiseEstimationLevelTypes.FIRST_LEVEL)
 
 if perform_fft:
-    # Perform FFT for all channels create one array of dimension eg : (5974, 4)
-        # # if methods above dont work for your signal you can try wavelet based denoising
-    for count, channel in enumerate(eeg_channels):
-        # first of all you can try simple moving median or moving average with different window size
-        # if count == 0:
-        # DataFilter.perform_rolling_filter(chunk[channel], 3, AggOperations.MEAN.value)
-        # elif count == 1:
-        #     DataFilter.perform_rolling_filter(chunk[channel], 3, AggOperations.MEDIAN.value)
-        # # if methods above dont work for your signal you can try wavelet based denoising
-        # # feel free to try different parameters
-        # else:
-        DataFilter.perform_wavelet_denoising(chunk[channel], WaveletTypes.BIOR3_9, 3, WaveletDenoisingTypes.SURESHRINK, ThresholdTypes.HARD,
-                                                    WaveletExtensionTypes.SYMMETRIC, NoiseEstimationLevelTypes.FIRST_LEVEL)
-        # # feel free to try different parameters
-        # else:
+                    # Perform FFT for all channels create one array of dimension eg : (5974, 4)
+    for count, channel in enumerate (eeg_channels):
+    #     # demo for fft, len of data must be a power of 2
+        fft_data = DataFilter.perform_fft (chunk[channel], WindowOperations.NO_WINDOW)
         N = len(fft_data)
         normalize = N/2
         # print(count)
@@ -98,6 +88,14 @@ if perform_fft:
         else:
             arry = np.concatenate((arry, (np.abs(fft_data)/normalize).reshape(-1, 1)), axis=1)
 
-        DataFilter.perform_wavelet_denoising(chunk[channel], WaveletTypes.BIOR3_9, 3, WaveletDenoisingTypes.SURESHRINK, ThresholdTypes.HARD,
-                                             WaveletExtensionTypes.SYMMETRIC, NoiseEstimationLevelTypes.FIRST_LEVEL)
+    processed_chunks.append(arry)
+else:
+    for count, channel in enumerate (eeg_channels):
+    #     # demo for fft, len of data must be a power of 2
+        non_fft_data = chunk[channel]
+        if count == 0:
+            arry = non_fft_data.reshape(-1, 1)
+        else:
+            arry = np.concatenate((arry, non_fft_data.reshape(-1, 1)), axis=1)
+    processed_chunks.append(arry)
 
